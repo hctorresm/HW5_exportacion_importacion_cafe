@@ -29,7 +29,9 @@ https://docs.google.com/presentation/d/e/2PACX-1vR705UawwMigzT0_w56q4nxc4kfqNMUo
 # Autor
 Harry Cristhian Torres Moreno
 
-https://twitter.com/HarryCTorres
+https://twitter.com/HarryCTorres/status/1056962018408833024
+
+
 
 # Lic
 
