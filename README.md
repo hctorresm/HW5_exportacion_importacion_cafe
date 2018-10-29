@@ -15,7 +15,7 @@ Anaconda-Spyder, Python, Text Sublime, HTML, CSS, Javascript D3 v5.0, GitHub par
 
 # Video 
 
-
+youtube
 
 # Diapositivas
 https://docs.google.com/presentation/d/e/2PACX-1vR705UawwMigzT0_w56q4nxc4kfqNMUoILsjVlB8uhjzPWei_KRsWABb4HbwL601qLYrngAibN-rT0S/pub?start=false&loop=false&delayms=3000&fbclid=IwAR2cuMzCPW3polYgpqB1wCkPN0zQDI6Y_6nibVwcAKXSWql6gEXKaYSb4pA&slide=id.gc6f90357f_0_0
