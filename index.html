@@ -1,0 +1,629 @@
+<html>
+<body>
+
+<h1> Exportaciones e importaciones de café en Colombia </h1>
+
+<ul>
+<li>Universidad de los Andes</li>
+<li>Maestría en ingeniería de información </li>
+<li>Visual analytics</li>
+<li>Autor: <a target="_blank" href="https://www.linkedin.com/in/harry-cristhian-torres-moreno-5bb53370/">Harry Cristhian Torres Moreno</a> </li>
+<li>Código: 201727422 </li>
+
+</ul>
+
+<hr/>
+
+
+<h2> Introducción</h2>
+<p>
+Colombia es uno de los países que se ha caracterizado por su café, el Ministerio de Agricultura y Desarrollo Rural se ha encargado de recopilar toda la información asociada a las exportaciones e importaciones de Café, lo anterior con el fin de poder cuantificar las ganancias asociadas a este producto.</p>
+<p>
+Teniendo en cuenta lo anterior, se propone construir dos visualizaciones interactivas con el objetivo de estudiar a  profundidad hacia donde se está exportando café y desde donde provienen las importaciones por departamento, para tal fin se construyó dos visualizaciones basadas en redes con el objetivo de generar insights, los datos se encuentran disponibles en la página de datos abiertos de colombia en <a target="_blank" href= "https://www.datos.gov.co/Agricultura-y-Desarrollo-Rural/Cadena-Productiva-Caf-Importaciones/gxbt-i3rd"> datos importaciones de café </a> y en  <a target="_blank" href= "https://www.datos.gov.co/Agricultura-y-Desarrollo-Rural/Cadena-Productiva-Caf-Exportaciones/gzwq-vje7"> datos exportaciones de café </a>.</p>
+
+<h2> Metodología </h2>
+<ul>
+  <li> <strong>Datos:</strong> Los datos fueron obtenidos de  la página de <a target="_blank" href= "https://www.datos.gov.co/"> Datos abiertos de Colombia </a>, estos datos contienen las importaciones y exportaciones de café por departamento desde el año 20016 hasta el año 2018</li>
+  <li> <strong>Procesamiento de los datos: </strong> Para poder obtener una estructura de datos que permitiera identificar los nodos y las relaciones entre estos, fue necesario procesar los datos previamente en Python, llevando estos datos a un formato json. </li>
+  <li> <strong>Visualización: </strong> Para seleccionar la mejor visualización teniendo en cuenta el principio de expresividad y eficiencia, se utilizó como metodología el framework de Tamara (Tamara Munzner: Visualization Analysis and Design AK Peters 2014.) </li>
+  <li> <strong> Herramientas </strong>
+    <ul>
+    <li>Anaconda-Spyder, Python</li>
+    <li>Text Sublime, HTML, CSS, Javascript D3 v5.0</li>
+    <li>GitHub para el desplegue de la página </li>
+  </ul>
+</li>  
+</ul>
+
+
+<h2> Exportaciones de café </h2>
+
+<p> Con el fin de estudiar hacia donde se está exportando café, se propone construir una visualización basada en redes, a continuación se describe esta visualizaión en funión del framework de Tanara.</p>
+
+<ul>
+    <li> <strong>What</strong> 
+        <ul> 
+            <li> <strong>Tipo de conjunto de datos: </strong> Network </li>
+            <li> <strong> Nodos </strong> Los nodos son:
+                <ol> 
+                    <li> <strong>Departamento origen:</strong> Corresponde al departamento de donde se exporta el café.</li>
+                    <li> <strong>País destino: </strong> Corresponde al país de destino de la exportación de café.</li>
+                </ol>
+            <li> <strong> Atributos </strong> </li>
+                <ol> 
+                    <li><strong> Tipo de región </strong> Es una varaible categórica que permite identificar si la región corresponde a un departamento de Colombia o si es un país.</li> 
+                </ol>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<ul>
+    <li> <strong> Why </strong> 
+         <ul>
+         <li> <strong>Tarea:</strong> Explorar topologías de la red de exportaciones de café (Tamara: Search (Explore) - Topology ) </li>
+         </ul>
+    </li>
+
+</ul>
+    
+
+<ul>
+    <li> <strong> How </strong> 
+         <ul>
+         <li> <strong>Marcas:</strong> Puntos para identificar los nodos y lìneas para identificar los enlaces </li>
+         <li> <strong>Canales:</strong> 
+            <ul>
+                <li> <strong>Color Hue: </strong> Cada nodo tendrá un color que permitirá identificar si es un departamento y un país. </li>
+                <li> <strong>Posición :</strong> Cada nodo tendrá una posición espacial determinada, esta viene influenciada por el diagrama de fuerza </li>
+            </ul>
+
+
+          </li>
+
+
+         </ul>
+    </li>
+
+</ul>
+
+
+
+<svg id='viz'></svg>
+
+
+<script src='https://d3js.org/d3.v5.min.js'></script>
+
+
+
+
+<script>
+
+var width = 800;
+var height = 600;
+var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+console.log("graph.links.value");
+
+d3.json("https://raw.githubusercontent.com/hctorresm/exportacion_cafe/master/data_t5_1201.json").then(function(graph) {
+
+
+///  var filteredLinks = graph.links.filter(d => d.value == value);
+
+
+arreglo_final_links=[];
+arreglo_final_nodos1=new Set(); 
+graph.links.forEach(function(i) {
+    console.log("elementos",i.value)
+    if (i.value==1){
+        arreglo_final_links.push(i);
+        arreglo_final_nodos1.add(i.target);
+        arreglo_final_nodos1.add(i.source);
+    }
+});
+
+console.log(arreglo_final_links);
+
+arreglo_final_nodos2=[]
+for (let item of arreglo_final_nodos1){
+    arreglo_final_nodos2.push(item)
+};
+
+
+console.log(arreglo_final_nodos2);
+console.log(graph.nodes)
+
+  //var names = filteredLinks.map(d => d.source);
+   // var filteredNodes = graph.nodes.filter((d) => {
+   //     return (names.indexOf(d.id) >= 0) || 
+   //           (names.indexOf(d.group) >= 0)
+   // });
+
+var label = {
+    nodes: [],
+    links: []
+};
+
+
+graph.nodes.forEach(function(d, i) {
+    label.nodes.push({node: d});
+    label.nodes.push({node: d});
+    label.links.push({
+        source: i * 2,
+        target: i * 2 + 1
+    });
+});
+
+var labelLayout = d3.forceSimulation(label.nodes)
+    .force("charge", d3.forceManyBody().strength(-50))
+    .force("link", d3.forceLink(label.links).distance(0).strength(2));
+
+var graphLayout = d3.forceSimulation(graph.nodes)
+    .force("charge", d3.forceManyBody().strength(-3000))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .force("x", d3.forceX(width / 2).strength(1))
+    .force("y", d3.forceY(height / 2).strength(1))
+    .force("link", d3.forceLink(graph.links).id(function(d) {return d.id; }).distance(50).strength(1))
+    .on("tick", ticked);
+
+var adjlist = [];
+
+graph.links.forEach(function(d) {
+    adjlist[d.source.index + "-" + d.target.index] = true;
+    adjlist[d.target.index + "-" + d.source.index] = true;
+});
+
+function neigh(a, b) {
+    return a == b || adjlist[a + "-" + b];
+}
+
+
+var svg = d3.select("#viz").attr("width", width).attr("height", height);
+var container = svg.append("g");
+
+svg.call(
+    d3.zoom()
+        .scaleExtent([.1, 4])
+        .on("zoom", function() { container.attr("transform", d3.event.transform); })
+);
+
+var link = container.append("g").attr("class", "links")
+    .selectAll("line")
+    .data(graph.links)
+    .enter()
+    .append("line")
+    .attr("stroke", "#aaa")
+    .attr("stroke-width", "1px");
+
+var node = container.append("g").attr("class", "nodes")
+    .selectAll("g")
+    .data(graph.nodes)
+    .enter()
+    .append("circle")
+    .attr("r", 5)
+    .attr("fill", function(d) { return color(d.group); })
+
+node.on("mouseover", focus).on("mouseout", unfocus);
+
+node.call(
+    d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
+);
+
+var labelNode = container.append("g").attr("class", "labelNodes")
+    .selectAll("text")
+    .data(label.nodes)
+    .enter()
+    .append("text")
+    .text(function(d, i) { return i % 2 == 0 ? "" : d.node.id; })
+    .style("fill", "#555")
+    .style("font-family", "Arial")
+    .style("font-size", 12)
+    .style("pointer-events", "none"); // to prevent mouseover/drag capture
+
+node.on("mouseover", focus).on("mouseout", unfocus);
+
+function ticked() {
+
+
+
+    node.call(updateNode);
+    link.call(updateLink);
+
+    labelLayout.alphaTarget(0.3).restart();
+    labelNode.each(function(d, i) {
+        if(i % 2 == 0) {
+            d.x = d.node.x;
+            d.y = d.node.y;
+        } else {
+            var b = this.getBBox();
+
+            var diffX = d.x - d.node.x;
+            var diffY = d.y - d.node.y;
+
+            var dist = Math.sqrt(diffX * diffX + diffY * diffY);
+
+            var shiftX = b.width * (diffX - dist) / (dist * 2);
+            shiftX = Math.max(-b.width, Math.min(0, shiftX));
+            var shiftY = 16;
+            this.setAttribute("transform", "translate(" + shiftX + "," + shiftY + ")");
+        }
+    });
+    labelNode.call(updateNode);
+
+}
+
+function fixna(x) {
+    if (isFinite(x)) return x;
+    return 0;
+}
+
+function focus(d) {
+    var index = d3.select(d3.event.target).datum().index;
+    node.style("opacity", function(o) {
+        return neigh(index, o.index) ? 1 : 0.1;
+    });
+    labelNode.attr("display", function(o) {
+      return neigh(index, o.node.index) ? "block": "none";
+    });
+    link.style("opacity", function(o) {
+        return o.source.index == index || o.target.index == index ? 1 : 0.1;
+    });
+}
+
+function unfocus() {
+   labelNode.attr("display", "block");
+   node.style("opacity", 1);
+   link.style("opacity", 1);
+}
+
+function updateLink(link) {
+    link.attr("x1", function(d) { return fixna(d.source.x); })
+        .attr("y1", function(d) { return fixna(d.source.y); })
+        .attr("x2", function(d) { return fixna(d.target.x); })
+        .attr("y2", function(d) { return fixna(d.target.y); });
+}
+
+function updateNode(node) {
+    node.attr("transform", function(d) {
+        return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
+    });
+}
+
+function dragstarted(d) {
+    d3.event.sourceEvent.stopPropagation();
+    if (!d3.event.active) graphLayout.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+}
+
+function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+}
+
+function dragended(d) {
+    if (!d3.event.active) graphLayout.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+}
+
+}); // d3.json
+
+
+</script>
+
+<h2>Análisis e insigths </h2>
+Esta visualización permite identificar hacia donde se está exportando café por departamento, los países y departamentos que están alejados del "centro" son aquellos que tienen menos interacciones (menor número de relaciones), así mismo, al dar click sobre un nodo en particular, los demás que no tienen relación con este se ocultan.  A continuación se describen algunos insights que se pueden evidenciar en la visualización.
+
+
+<li>  La Guajra, el Guaviare, Guanía, el Amazonas, Putumayo son los departamentos que exportan café a menos destinos. </li>
+<li>  Paises como Serbia, Cuba, Costa de Marfil, Mongolia, Qatar, Corea República Democrática, Hungría son los paises que menos importaciones de café recibe de Colombia </li>
+<li>  El único departamento que exporta café a Corea República Democrática es el Tolima. </li>
+<li>  El único departamento que exporta café a Hungría es el Tolima. </li>
+
+
+<h2> Importaciones de café en Colombia </h2>
+
+<p> Con el fin de estudiar de donde provienen las importaciones de café, se propone construir una visualización basada en redes, a continuación se describe esta visualizaión en funión del framework de Tanara.</p>
+
+<ul>
+    <li> <strong>What</strong> 
+        <ul> 
+            <li> <strong>Tipo de conjunto de datos: </strong> Network </li>
+            <li> <strong> Nodos </strong> Los nodos son:
+                <ol> 
+                    <li> <strong>Departamento destino:</strong> Corresponde al departamento a donde llega la importación de café.</li>
+                    <li> <strong>País origen: </strong> Corresponde al país de donde proviene la importación de café.</li>
+                </ol>
+            <li> <strong> Atributos </strong> </li>
+                <ol> 
+                    <li><strong> Tipo de región </strong> Es una varaible categórica que permite identificar si la región corresponde a un departamento de Colombia o si es un país.</li> 
+                </ol>
+            </li>
+        </ul>
+    </li>
+</ul>
+
+<ul>
+    <li> <strong> Why </strong> 
+         <ul>
+         <li> <strong>Tarea:</strong> Explorar topologías de la red de importaciones de café (Tamara: Search (Explore) - Topology ) </li>
+         </ul>
+    </li>
+
+</ul>
+    
+
+<ul>
+    <li> <strong> How </strong> 
+         <ul>
+         <li> <strong>Marcas:</strong> Puntos para identificar los nodos y lìneas para identificar los enlaces </li>
+         <li> <strong>Canales:</strong> 
+            <ul>
+                <li> <strong>Color Hue: </strong> Cada nodo tendrá un color que permitirá identificar si es un departamento y un país. </li>
+                <li> <strong>Posición :</strong> Cada nodo tendrá una posición espacial determinada, esta viene influenciada por el diagrama de fuerza </li>
+            </ul>
+
+          </li>
+
+
+         </ul>
+    </li>
+
+</ul>
+
+
+
+
+<svg id='viz2'></svg>
+
+
+
+<script>
+
+var width2 = 800;
+var height2 = 600;
+var color2 = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+/////console.log("graph.links.value");
+
+d3.json("https://raw.githubusercontent.com/hctorresm/exportacion_cafe/master/data_t5_1246.json").then(function(graph2) {
+
+
+///  var filteredLinks = graph.links.filter(d => d.value == value);
+
+
+arreglo_final_links2=[];
+arreglo_final_nodos12=new Set(); 
+graph2.links.forEach(function(i) {
+    console.log("elementos",i.value)
+    if (i.value==1){
+        arreglo_final_links2.push(i);
+        arreglo_final_nodos12.add(i.target);
+        arreglo_final_nodos12.add(i.source);
+    }
+});
+
+///console.log(arreglo_final_links);
+
+arreglo_final_nodos22=[]
+for (let item of arreglo_final_nodos12){
+    arreglo_final_nodos22.push(item)
+};
+
+
+//console.log(arreglo_final_nodos2);
+//console.log(graph.nodes)
+
+  //var names = filteredLinks.map(d => d.source);
+   // var filteredNodes = graph.nodes.filter((d) => {
+   //     return (names.indexOf(d.id) >= 0) || 
+   //           (names.indexOf(d.group) >= 0)
+   // });
+
+var label2 = {
+    nodes: [],
+    links: []
+};
+
+
+graph2.nodes.forEach(function(d, i) {
+    label2.nodes.push({node: d});
+    label2.nodes.push({node: d});
+    label2.links.push({
+        source: i * 2,
+        target: i * 2 + 1
+    });
+});
+
+var labelLayout2 = d3.forceSimulation(label2.nodes)
+    .force("charge", d3.forceManyBody().strength(-50))
+    .force("link", d3.forceLink(label2.links).distance(0).strength(2));
+
+var graphLayout2 = d3.forceSimulation(graph2.nodes)
+    .force("charge", d3.forceManyBody().strength(-3000))
+    .force("center", d3.forceCenter(width2 / 2, height2 / 2))
+    .force("x", d3.forceX(width2 / 2).strength(1))
+    .force("y", d3.forceY(height2 / 2).strength(1))
+    .force("link", d3.forceLink(graph2.links).id(function(d) {return d.id; }).distance(50).strength(1))
+    .on("tick", ticked);
+
+var adjlist2 = [];
+
+graph2.links.forEach(function(d) {
+    adjlist2[d.source.index + "-" + d.target.index] = true;
+    adjlist2[d.target.index + "-" + d.source.index] = true;
+});
+
+function neigh(a, b) {
+    return a == b || adjlist2[a + "-" + b];
+}
+
+
+var svg2 = d3.select("#viz2").attr("width", width2).attr("height", height2);
+var container2 = svg2.append("g");
+
+svg2.call(
+    d3.zoom()
+        .scaleExtent([.1, 4])
+        .on("zoom", function() { container2.attr("transform", d3.event.transform); })
+);
+
+var link2 = container2.append("g").attr("class", "links")
+    .selectAll("line")
+    .data(graph2.links)
+    .enter()
+    .append("line")
+    .attr("stroke", "#aaa")
+    .attr("stroke-width", "1px");
+
+var node2 = container2.append("g").attr("class", "nodes")
+    .selectAll("g")
+    .data(graph2.nodes)
+    .enter()
+    .append("circle")
+    .attr("r", 5)
+    .attr("fill", function(d) { return color2(d.group); })
+
+node2.on("mouseover", focus).on("mouseout", unfocus);
+
+node2.call(
+    d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
+);
+
+
+var labelNode2 = container2.append("g").attr("class", "labelNodes")
+    .selectAll("text")
+    .data(label2.nodes)
+    .enter()
+    .append("text")
+    .text(function(d, i) { return i % 2 == 0 ? "" : d.node.id; })
+    .style("fill", "#555")
+    .style("font-family", "Arial")
+    .style("font-size", 12)
+    .style("pointer-events", "none"); // to prevent mouseover/drag capture
+
+node2.on("mouseover", focus).on("mouseout", unfocus);
+
+function ticked() {
+
+
+    node2.call(updateNode);
+    link2.call(updateLink);
+
+    labelLayout2.alphaTarget(0.3).restart();
+    labelNode2.each(function(d, i) {
+        if(i % 2 == 0) {
+            d.x = d.node.x;
+            d.y = d.node.y;
+        } else {
+            var b = this.getBBox();
+
+            var diffX2 = d.x - d.node.x;
+            var diffY2 = d.y - d.node.y;
+
+            var dist2 = Math.sqrt(diffX2 * diffX2 + diffY2 * diffY2);
+
+            var shiftX2= b.width * (diffX2 - dist2) / (dist2 * 2);
+            shiftX2 = Math.max(-b.width, Math.min(0, shiftX2));
+            var shiftY2 = 16;
+            this.setAttribute("transform", "translate(" + shiftX2 + "," + shiftY2 + ")");
+        }
+    });
+    labelNode2.call(updateNode);
+
+}
+
+function fixna(x) {
+    if (isFinite(x)) return x;
+    return 0;
+}
+
+function focus(d) {
+    var index2 = d3.select(d3.event.target).datum().index;
+    node2.style("opacity", function(o) {
+        return neigh(index2, o.index) ? 1 : 0.1;
+    });
+    labelNode2.attr("display", function(o) {
+      return neigh(index2, o.node.index) ? "block": "none";
+    });
+    link2.style("opacity", function(o) {
+        return o.source.index == index2 || o.target.index == index2 ? 1 : 0.1;
+    });
+}
+
+function unfocus() {
+   labelNode2.attr("display", "block");
+   node2.style("opacity", 1);
+   link2.style("opacity", 1);
+}
+
+function updateLink(link) {
+    link.attr("x1", function(d) { return fixna(d.source.x); })
+        .attr("y1", function(d) { return fixna(d.source.y); })
+        .attr("x2", function(d) { return fixna(d.target.x); })
+        .attr("y2", function(d) { return fixna(d.target.y); });
+}
+
+function updateNode(node) {
+    node.attr("transform", function(d) {
+        return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
+    });
+}
+
+function dragstarted(d) {
+    d3.event.sourceEvent.stopPropagation();
+    if (!d3.event.active) graphLayout2.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+}
+
+function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+}
+
+function dragended(d) {
+    if (!d3.event.active) graphLayout2.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
+}
+
+}); // d3.json
+
+</script>
+<h2>Análisis e insigths </h2>
+Esta visualización permite identificar de donde provienen las importaciones de café por departamento, los países y departamentos que están alejados del "centro" son aquellos que tienen menos interacciones (menor número de relaciones), así mismo, al dar click sobre un nodo en particular, los demás que no tienen relación con este se ocultan.  A continuación se describen algunos insights que se pueden evidenciar en la visualización.
+
+
+<li>Estados Unidos es el único país que importa café a la Guajira y San Andrés   </li>
+<li> Perú es el único país que importa café a Sucre y a Santander  </li>
+<li> Países como Finlandia, Argentina, Uruguary, Taiwán, Arabia Saudita, Paises Bajos, Corea y Taiwán provincia de China únicamente exportan café a Bogotá.  </li>
+<li> Países como Venezuela, Viena y Puerto Rico únicamente exportan café a Antioquia    </li>
+
+
+</body>
+
+
+<h1> Referencias </h1>
+El código para la construcción de las redes fue adaptado de los siguientes fuentes:
+
+<li> http://bl.ocks.org/jose187/4733747 </li>
+<li> https://cambridge-intelligence.com/web-graph-visualization-d3-keylines/ </li>
+<li> http://bl.ocks.org/MoritzStefaner/1377729
+<li> https://bl.ocks.org/mapio/53fed7d84cd1812d6a6639ed7aa83868 </li>
+<li> https://beta.observablehq.com/@mbostock/d3-force-directed-graph </li>
+<li> https://www.youtube.com/watch?v=gda35eYXBJc </li>
+
+ 
+
+
+</html>
