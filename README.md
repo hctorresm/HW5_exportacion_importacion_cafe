@@ -13,6 +13,11 @@ Visualización: Para seleccionar la mejor visualización teniendo en cuenta el p
 ## Herramientas
 Anaconda-Spyder, Python, Text Sublime, HTML, CSS, Javascript D3 v5.0, GitHub para el desplegue de la página
 
+
+# Página web con la vvisualización
+
+https://hctorresm.github.io/HW5_exportacion_importacion_cafe/
+
 # Video 
 
 
